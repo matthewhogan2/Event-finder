@@ -5,11 +5,18 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
 const eventRoutes = require('./routes/eventRoutes');
-
-
+const cors = require('cors'); 
 const app = express();
 
+
 // Middleware
+app.use(cors({
+  origin: 'http://localhost:5500',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
+
+
 app.use(express.json());
 app.use(cookieParser());
 
