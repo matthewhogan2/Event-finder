@@ -1,24 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const { searchEvents } = require('../controllers/eventController');
 const auth = require('../middleware/authMiddleware');
+const upload = require('../config/multer');
 const {
-  getAllEvents,
+  getEvents,
+  searchEvents,
+  getSavedEvents,
   saveEvent,
-  removeEvent,
-  getSavedEvents
+  removeSavedEvent,
+  createEvent,
+  deleteEvent
 } = require('../controllers/eventController');
 
-// Public routes
-router.get('/', getAllEvents);
 
-// Public search
+// Public routes
+router.get('/', getEvents);
 router.get('/search', searchEvents);
 
 
-// Protected routes
-router.post('/save', auth, saveEvent);
-router.delete('/remove/:eventId', auth, removeEvent);
+// Protectected routes (must be logged in)
 router.get('/saved', auth, getSavedEvents);
+router.post('/save', auth, saveEvent);
+router.delete('/remove/:eventId', auth, removeSavedEvent);
+
+
+// create event (must be logged in)
+router.post('/create', auth, upload.single("image"), createEvent);
+
+// delete an event (owner only)
+router.delete('/:eventId', auth, deleteEvent);
 
 module.exports = router;

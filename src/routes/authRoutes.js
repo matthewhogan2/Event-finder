@@ -2,13 +2,18 @@
 
 const express = require('express');
 const router = express.Router();
-const { register } = require('../controllers/authController');
-const { login } = require('../controllers/authController');
-
+const auth = require('../middleware/authMiddleware');
+const { register, login, getMe, logout } = require('../controllers/authController');
 
 
 router.post('/register', register);
 router.post('/login', login);
+
+// must be logged in
+router.get('/me', auth, getMe);
+
+// logout (no auth required, but it's fine if cookie missing)
+router.post('/logout', logout);
 
 
 module.exports = router;

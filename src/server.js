@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
@@ -20,11 +21,21 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Serve frontend static assets
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
+app.use('/frontend', express.static(frontendPath)); // allow /frontend/... paths
+
 // Routes
 app.use('/auth', authRoutes);
 
 // Event routes
 app.use('/events', eventRoutes);
+
+// Static folder for uploads
+const uploadsPath = path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadsPath));
+
 
 // Test route
 app.get('/', (req, res) => {

@@ -3,7 +3,8 @@ const User = require('../models/User');
 
 async function authMiddleware(req, res, next) {
   try {
-    const token = req.cookies[process.env.COOKIE_NAME];
+    const cookieName = process.env.COOKIE_NAME || 'jwt';
+    const token = req.cookies[cookieName];
 
     if (!token) {
       return res.status(401).json({ message: 'Not authorized' });

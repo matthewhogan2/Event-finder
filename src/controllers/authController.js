@@ -2,13 +2,14 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const COOKIE_NAME = process.env.COOKIE_NAME || 'token';
+const COOKIE_NAME = process.env.COOKIE_NAME || "jwt";
 const COOKIE_CONFIG = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  secure: process.env.NODE_ENV === 'production', // true only in production with https
+  sameSite: "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000
 };
+
 
 const formatUser = (user) => ({
   id: user._id,
@@ -24,7 +25,6 @@ const signAndSetCookie = (res, userId) => {
 
 
 // Registration logic for authController.js
-
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -118,57 +118,11 @@ exports.currentUser = async (req, res) => {
   }
 };
 
-
-
-//Login logic for authController.js
-
-
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Check fields
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password required' });
-    }
-
-    // Find user
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Generate token
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    // Set cookie
-    res.cookie(process.env.COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: false, // set true in production
-      sameSite: 'lax'
-    });
-
-    res.json({
-      message: 'Login successful',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+// Return current logged in user
+exports.getMe = (req, res) => {
+  // auth middleware should have set req.user
+  if (!req.user) {
+    return res.status(401).json({ message: "Not authorized" });
   }
+  res.json({ user: req.user });
 };
