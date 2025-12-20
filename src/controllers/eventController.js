@@ -26,6 +26,7 @@ exports.saveEvent = async (req, res) => {
     if (!alreadySaved) {
       req.user.savedEvents.push(event._id);
       await req.user.save();
+      await Event.findByIdAndUpdate(eventId, { $inc: { saveCount: 1 } });
     }
 
     res.json({ message: 'Event saved', savedEvents: req.user.savedEvents });
@@ -42,10 +43,17 @@ exports.removeSavedEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
 
-    req.user.savedEvents = req.user.savedEvents.filter(
-      id => id.toString() !== eventId
-    );
+    const wasSaved = req.user.savedEvents.some(id => id.toString() === eventId);
+    req.user.savedEvents = req.user.savedEvents.filter(id => id.toString() !== eventId);
     await req.user.save();
+
+    if (wasSaved) {
+      const event = await Event.findById(eventId);
+      if (event) {
+        event.saveCount = Math.max(0, (event.saveCount || 0) - 1);
+        await event.save();
+      }
+    }
 
     res.json({ message: 'Event removed', savedEvents: req.user.savedEvents });
 
@@ -170,21 +178,25 @@ exports.createEvent = async (req, res) => {
 // Delete an event (owner only)
 exports.deleteEvent = async (req, res) => {
   try {
-    const { eventId } = req.params;
-    const event = await Event.findById(eventId);
+    const { id } = req.params;
+    const event = await Event.findById(id);
 
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (!event.createdBy) {
+      return res.status(400).json({ message: "Event has no owner set" });
     }
 
     if (event.createdBy.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not allowed to delete this event" });
     }
 
-    await Event.findByIdAndDelete(eventId);
+    await Event.findByIdAndDelete(id);
     await User.updateMany(
-      { savedEvents: eventId },
-      { $pull: { savedEvents: eventId } }
+      { savedEvents: id },
+      { $pull: { savedEvents: id } }
     );
 
     res.json({ message: "Event deleted" });

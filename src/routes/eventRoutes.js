@@ -28,6 +28,6 @@ router.delete('/remove/:eventId', auth, removeSavedEvent);
 router.post('/create', auth, upload.single("image"), createEvent);
 
 // delete an event (owner only)
-router.delete('/:eventId', auth, deleteEvent);
+router.delete('/:id', auth, deleteEvent);
 
 module.exports = router;

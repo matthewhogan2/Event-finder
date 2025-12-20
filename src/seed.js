@@ -21,21 +21,37 @@ async function seed() {
     console.log("Created seed host user: host@example.com / password123");
   }
 
+  // date helpers
+  // use midday to avoid timezone rollbacks/forwards on UTC conversion
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const fmt = (d) => new Date(d).toISOString().slice(0, 10); // YYYY-MM-DD
+  const daysFromNow = (n) => {
+    const copy = new Date(today);
+    copy.setDate(copy.getDate() + n);
+    return fmt(copy);
+  };
+  const monthsFromNow = (n) => {
+    const copy = new Date(today);
+    copy.setMonth(copy.getMonth() + n);
+    return fmt(copy);
+  };
+
   // Sample events
   const events = [
     {
       title: "Local Jazz Night",
       category: "Music",
-      date: "2025-12-12",
+      date: daysFromNow(7), 
       location: "Dublin City Centre",
-      description: "A relaxing night of live jazz at The Blue Note.",
+      description: "A relaxing night of live jazz at The Blue Note. All are welcome!",
       time: "19:30",
       image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Tech Meetup",
       category: "Technology",
-      date: "2025-12-15",
+      date: monthsFromNow(1), 
       location: "Tu Dublin",
       description: "Networking event for software developers and tech enthusiasts.",
       time: "18:00",
@@ -44,7 +60,7 @@ async function seed() {
     {
       title: "Outdoor Yoga Session",
       category: "Fitness",
-      date: "2025-12-20",
+      date: daysFromNow(21), 
       location: "Phoenix Park",
       description: "Morning yoga session in nature. All skill levels welcome.",
       time: "08:00",
@@ -53,7 +69,7 @@ async function seed() {
     {
       title: "Art Exhibition",
       category: "Art",
-      date: "2025-12-18",
+      date: monthsFromNow(2), 
       location: "National Gallery of Ireland",
       description: "Showcasing contemporary artists from across Ireland.",
       time: "17:00",
@@ -63,9 +79,9 @@ async function seed() {
     {
       title: "Stand-up Comedy Night",
       category: "Comedy",
-      date: "2025-12-22",
+      date: monthsFromNow(3), 
       location: "The Laughter Lounge",
-      description: "An evening of laughs featuring up-and-coming comedians.",
+      description: "An evening of laughs featuring up and coming comedians.",
       time: "21:00",
       image: "https://images.unsplash.com/photo-1518972559570-7cc1309f3229?auto=format&fit=crop&w=800&q=80"
 
