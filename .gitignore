@@ -1,12 +1,16 @@
-# macOS
-.DS_Store
+# Backend
+backend/node_modules
+backend/.env
+backend/uploads
 
-# Environment variables
-.env
+# Frontend uploads (if any)
+uploads/
 
 # Node
-node_modules/
+node_modules
+.env
 
-# Uploads (if user files)
-uploads/*
-!uploads/.gitkeep
+# OS / Editor
+.DS_Store
+.vscode
+
