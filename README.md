@@ -2,13 +2,11 @@
 
 
 Author: Matthew Hogan
-Student Number: C23433226
 Name: EventFinder 
 
 
 Overview:
-EventFinder is a full-stack web application developed as part of the Web Development and Deployment (TU857) module.  
-The application allows users to browse, search, save, and create local events, with authentication and persistent data storage.
+EventFinder is a full-stack web application. The application allows users to browse, search, save, and create local events, with authentication and persistent data storage.
 
 The platform supports both public users (who can browse and search events) and logged in users(who can save events and create their own).
 
